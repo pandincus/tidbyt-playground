@@ -41,7 +41,15 @@ def main(config):
     # (This is temporary, we'll replace this with a random quote in the upcoming commits)
     character_names = ", ".join(map(lambda c: c["name"], characters))
     return render.Root(
-        child = render.Text(character_names)
+        delay = 100, # 100ms delay between frames (to slow down the scrolling and give the user time to read)
+        child = render.Marquee(
+            width = 64, # maximum width
+            height = 32, # maximum height
+            scroll_direction = "vertical",
+            child = render.WrappedText(
+                content = character_names
+            )
+        )
     )
 
 # Helper function to map a function over a list
