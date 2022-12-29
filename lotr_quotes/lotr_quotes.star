@@ -5,6 +5,8 @@ Description: Displays a random quote from a LOTR movie character
 Author: pandincus and Ilya Zinger
 """
 
+#adding some comments to check commits in vscode
+
 load("render.star", "render")
 load("http.star", "http")
 load("secret.star", "secret")
