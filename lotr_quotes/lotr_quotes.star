@@ -43,11 +43,6 @@ def main(config):
             "id": characters_json[i]["_id"]
         })
 
-    # Render the list of character names as a list of strings rather than one string with commas between characters
-    # so that we can search character by index
-    # (This is temporary, we'll replace this with a random quote in the upcoming commits)
-    character_names = map(lambda c: c["name"], characters)
-
     # Generate random character
     random_character = random.number(0, len(characters)-1)
 
@@ -58,7 +53,7 @@ def main(config):
             height = 32, # maximum height
             scroll_direction = "vertical",
             child = render.WrappedText(
-                content = character_names[random_character]
+                content = characters_json[random_character]["name"]
             )
         )
     )
