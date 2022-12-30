@@ -12,7 +12,11 @@ load("http.star", "http")
 load("secret.star", "secret")
 
 ONE_RING_ROOT_API = "https://the-one-api.dev/v2"
-DEFAULT_CHARACTER_NAMES = "Gandalf,Legolas,Gimli,Boromir,Aragorn,Frodo,Samwise,Gollum,Elrond,Meriadoc,Pippin"
+# We query for the (currently hardcoded) list of
+# Gandalf,Legolas,Gimli,Boromir,Frodo Baggins,Samwise Gamgee,Galadriel,Aragorn II Elessar,Elrond,Gollum,Peregrin Took,Meriadoc Brandybuck,Théoden,Denethor II,Éowyn,Arwen,Faramir
+# We have to URL escape the spaces and special characters in their names
+# As starlark does not include a function to do this, we have to do it manually
+DEFAULT_CHARACTER_NAMES = "Gandalf%2CLegolas%2CGimli%2CBoromir%2CFrodo%20Baggins%2CSamwise%20Gamgee%2CGaladriel%2CAragorn%20II%20Elessar%2CElrond%2CGollum%2CPeregrin%20Took%2CMeriadoc%20Brandybuck%2CTh%C3%A9oden%2CDenethor%20II%2C%C3%89owyn%2CArwen%2CFaramir"
 CHARACTERS_API = ONE_RING_ROOT_API + "/character?name=" + DEFAULT_CHARACTER_NAMES
 API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5y4rrBQVGdfpr3uxwQNlJbIzXyoJZLBY7pRZX9MgJieuz3HWHIbqTlKEWgOVPF6YRJ5p5FVb0ukIrQUbINObJTeWlBT+r+x04Tpr/9DZo="
 
