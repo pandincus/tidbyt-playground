@@ -51,7 +51,7 @@ def main(config):
         child = render.Marquee(
             width = 64, # maximum width
             height = 32, # maximum height
-            scroll_direction = "vertical",
+            scroll_direction = "horizontal",
             child = render.WrappedText(
                 content = characters_json[random_character]["name"]
             )
