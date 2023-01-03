@@ -49,13 +49,74 @@ def main(config):
 
     quotesApi = QUOTES_API_TEMPLATE.format(characterId=random_character["_id"])
     response = http.get(quotesApi, headers=headers)
+
+    if response.status_code != 200:
+        fail("One Ring Quotes API Failed with status code", response.status_code)
     
     quotes_json = response.json()["docs"]
-    random_quote_index = random.number(0, len(quotes_json)-1)
-    random_quote = quotes_json[random_quote_index]
+
+    # print the number of quotes along with the character name and id
+    print("Found " + str(len(quotes_json)) + " quotes for " + random_character["name"] + " (" + random_character["_id"] + ")")
+
+    if len(quotes_json) == 1:
+        random_quote = quotes_json[0]
+    else:
+        random_quote_index = random.number(0, len(quotes_json)-1)
+        random_quote = quotes_json[random_quote_index]
     
+    print("We picked " + str(random_quote_index) + " and the quote is" + str(random_quote))
+    
+    # entire left side (2/3) = quote
+    # top right = character icon
+    # bottom right = character name
+
+    # two columns = first column is like 42 pixels wide, second column is 22 pixels wide, 32 pixels tall
+    # first column: all it has is a marquee holding wrapped text, scrolling vertically
+    # second column: has two rows, first row is 16 pixels tall, second row is 16 pixels tall
+    # second column, first row has the rendered image for icon
+    # second colun, second row just has wrapped text for the character name
+
     return render.Root(
-        child = render.Image(src=LOTR_ICON)
+        delay = 50,
+        child = render.Row(
+            children = [
+                render.Column(
+                    children = [
+                        render.Marquee(
+                            width = 36,
+                            height = 32,
+                            scroll_direction = "vertical",
+                            child = render.WrappedText(
+                                font = "tom-thumb",
+                                width = 36,
+                                content = random_quote["dialog"]
+                            )
+                        )
+                    ]
+                ),
+                render.Column(
+                    children = [
+                        render.Row(
+                            expanded = True,
+                            main_align = "center",
+                            children = [
+                                render.Image(src=LOTR_ICON)
+                            ]
+                        ),
+                        render.Row(
+                            expanded = True,
+                            main_align = "center",
+                            children = [
+                                render.WrappedText(
+                                    font = "tom-thumb",
+                                    content = random_character["name"]
+                                )
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
         #delay = 100, # 100ms delay between frames (to slow down the scrolling and give the user time to read)
         #child = render.Marquee(
         #    width = 64, # maximum width
