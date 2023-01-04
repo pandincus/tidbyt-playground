@@ -13,7 +13,6 @@ load("http.star", "http")
 load("secret.star", "secret")
 load("random.star", "random")
 
-
 ONE_RING_ROOT_API = "https://the-one-api.dev/v2"
 # We query for the (currently hardcoded) list of
 # Gandalf,Legolas,Gimli,Boromir,Frodo Baggins,Samwise Gamgee,Galadriel,Aragorn II Elessar,Elrond,Gollum,Peregrin Took,Meriadoc Brandybuck,Théoden,Denethor II,Éowyn,Arwen,Faramir
@@ -23,6 +22,7 @@ DEFAULT_CHARACTER_NAMES = "Gandalf%2CLegolas%2CGimli%2CBoromir%2CFrodo%20Baggins
 CHARACTERS_API = ONE_RING_ROOT_API + "/character?name=" + DEFAULT_CHARACTER_NAMES
 API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5y4rrBQVGdfpr3uxwQNlJbIzXyoJZLBY7pRZX9MgJieuz3HWHIbqTlKEWgOVPF6YRJ5p5FVb0ukIrQUbINObJTeWlBT+r+x04Tpr/9DZo="
 QUOTES_API_TEMPLATE = ONE_RING_ROOT_API + "/character/{characterId}/quote"
+GET_ALL_MOVIES_API = ONE_RING_ROOT_API + "/movie"
 
 LOTR_ICON = base64.decode("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7CAAAOwgEVKEqAAAADcklEQVR4Xj1TTW8bVRQ9M54ZJzO2Z2yPk9pxSBNoa1IajBpbEGgpoKAGoqJUagWIJSyMEGqQWCAksskfoF2wQGKBECvYVCL9AFEa2qhVUhWRj2nrhjSx09ip44nHHzO2xx7eTARn8fTe07vnnnvufRQIJiYm6FQq9XokEvn13CcfYXUzB9Nsg2VciAS9aDIUNgslWG0Lp8dO4cLX5yk7zoazYRiGisfj0YjMbzwV9uDywn2UawYYF41IwIuBaDdu3cugTQh2cwWUi6X/CRibwDRNy+fzfNa2dOxWXLAaOlJvvYSgX0SxXMX3V2/DgsvJ2OnzQNeqH5CYH+wzbS8sy1KBoHxuu1bHdqkKodON9958Be+fPIYT8RiajQZeGNgHoYODm+/AcCLx6X8l0Lb8ZDL5jpJewVBfN2RvJ6mdgRyU9t602ph4+XncW89BFnnnqq+vN0HTtOAo8Pl81MjIyGh/iEehVMGddAYjB3tgWaTeUhmwWjhzPI6GoSOvkjOBotyFJElxx79AIEBfuXrpY87jQja9gbOJA9B2K8hvZvHj9WXMzf8FymrDT6RvamUE/BIo03R8cwgEQaAmJyfx+VdfgJiON16Mg2dp1FkPaF7Cu6NJRAMCOK8fX377E9osC50QdHV3HdU0bc4hmLl8CYybg9XU8ezgIQRFL3TLheMJBsZOHkcH9+NxvgCGppDTamiSdkZCofMP0w8v0PV63VKUJQi8G3AxmL2rEHktqKT+UqUGhuNw7eYCLs7eQW63Cr3RhOzjIbhZxw9mbGxs+fqfM2hoLWIpg59/mwNPWbihZGA0WyhWdBzuCSDWI6NbFJCrtTAaH8DimrZHoKpFUSWPjKZpTyTSORUb2ypSp15Fo97EzUcFrCgKltYfwyA5SHPw9/o2tOreMNK3blzpeq5/H8JkZHtDIgxi7sz8CpFaR9moYWNtlQTk8cu8AosorJNET3Y0jL89vqcgvZbZqjFceLA3BLPdRn6nhK6AiO8u/g7Rw2PhQQaqWoIoSjDJUNmQpDCUFeWIo0CrNmgf6fHqVpH8LAocy2D4mSiGBqJQKwY6ODdOJo8g7Pci6OVBt1qIHYxhcXFxa2pqqkDhkOsb/NM60Xvg6ViImKQR5z8cHUafLOLa8iO8dni/k9XG7FIWQ8fGMT09zcmy3J/NZv/4Fw0uaOoDBK6wAAAAAElFTkSuQmCC")
 
@@ -35,6 +35,14 @@ def main(config):
     headers = {
         "Authorization": "Bearer " + str(api_key)
     }
+
+    # Fetch ALL movies from One Ring API, store them in a list
+    response = http.get(GET_ALL_MOVIES_API, headers=headers)
+    if response.status_code != 200:
+        fail("One Ring Movies API Failed with status code", response.status_code)
+
+    movies_json = response.json()["docs"]
+    movie_names_by_id = {movie["_id"]: movie["name"] for movie in movies_json}
 
     # Fetch the characters from the One Ring API, store them in a list
     response = http.get(CHARACTERS_API, headers=headers)
@@ -58,7 +66,9 @@ def main(config):
     # print the number of quotes along with the character name and id
     print("Found " + str(len(quotes_json)) + " quotes for " + random_character["name"] + " (" + random_character["_id"] + ")")
 
-    if len(quotes_json) == 1:
+    if len(quotes_json) == 0:
+        print("Found no quotes for " + random_character["name"] + "(" + random_character["_id"] + ")")
+    elif len(quotes_json) == 1:
         random_quote = quotes_json[0]
     else:
         random_quote_index = random.number(0, len(quotes_json)-1)
@@ -77,19 +87,24 @@ def main(config):
     # second colun, second row just has wrapped text for the character name
 
     return render.Root(
-        delay = 50,
+        delay = 100,
         child = render.Row(
             children = [
                 render.Column(
                     children = [
-                        render.Marquee(
+                        render.Box(
                             width = 36,
                             height = 32,
-                            scroll_direction = "vertical",
-                            child = render.WrappedText(
-                                font = "tom-thumb",
+                            color = "#540007",
+                            child = render.Marquee(
                                 width = 36,
-                                content = random_quote["dialog"]
+                                height = 32,
+                                scroll_direction = "vertical",
+                                child = render.WrappedText(
+                                    font = "tom-thumb",
+                                    width = 36,
+                                    content = random_quote["dialog"]
+                                )
                             )
                         )
                     ]
@@ -105,11 +120,34 @@ def main(config):
                         ),
                         render.Row(
                             expanded = True,
-                            main_align = "center",
                             children = [
-                                render.WrappedText(
-                                    font = "tom-thumb",
-                                    content = random_character["name"]
+                                render.Marquee(
+                                    width = 28,
+                                    height = 8,
+                                    scroll_direction = "horizontal",
+                                    align = "center",
+                                    child = render.WrappedText(
+                                        font = "tom-thumb",
+                                        height = 8,
+                                        content = random_character["name"]
+                                 )
+                                )
+                            ]
+                        ),
+                        render.Row(
+                            expanded = True,
+                            children = [
+                                render.Marquee(
+                                    width = 28,
+                                    height = 8,
+                                    offset_start = 2,
+                                    scroll_direction = "horizontal",
+                                    align = "center",
+                                    child = render.WrappedText(
+                                        font = "tom-thumb",
+                                        height = 8,
+                                        content = movie_names_by_id[random_quote["movie"]]
+                                    )
                                 )
                             ]
                         )
