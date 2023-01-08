@@ -5,8 +5,6 @@ Description: Displays a random quote from a LOTR movie character
 Author: pandincus and Ilya Zinger
 """
 
-#adding some comments to check commits in vscode
-
 load("render.star", "render")
 load("encoding/base64.star", "base64")
 load("http.star", "http")
@@ -18,7 +16,7 @@ ONE_RING_ROOT_API = "https://the-one-api.dev/v2"
 API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5y4rrBQVGdfpr3uxwQNlJbIzXyoJZLBY7pRZX9MgJieuz3HWHIbqTlKEWgOVPF6YRJ5p5FVb0ukIrQUbINObJTeWlBT+r+x04Tpr/9DZo="
 QUOTES_API_TEMPLATE = ONE_RING_ROOT_API + "/character/{characterId}/quote"
 GET_ALL_MOVIES_API = ONE_RING_ROOT_API + "/movie"
-CSV_ENDPOINT = "https://gist.githubusercontent.com/ilyazinger/939d635306f0d3483e959f150a41bd98/raw/368b4630d91627ee9b482761fbaee9452f5916d0/LOTR_Base64_Characters.csv"
+CSV_ENDPOINT = "https://gist.githubusercontent.com/pandincus/61249b73811c0d6bd910b3088c89fdb3/raw/aad8eeabf9ade32a67d6b6506a561453e2811974/LOTR_Base64_Characters.csv"
 
 # Load characters and images
 # ----------------------
@@ -93,7 +91,7 @@ def main(config):
     # second colun, second row just has wrapped text for the character name
 
     return render.Root(
-        delay = 100,
+        delay = 80,
         child = render.Row(
             children = [
                 render.Column(
@@ -103,7 +101,6 @@ def main(config):
                             height = 32,
                             color = "#540007",
                             child = render.Marquee(
-                                width = 36,
                                 height = 32,
                                 scroll_direction = "vertical",
                                 child = render.WrappedText(
@@ -121,22 +118,10 @@ def main(config):
                             expanded = True,
                             main_align = "center",
                             children = [
-                                render.Image(src=random_character["image"])
-                            ]
-                        ),
-                        render.Row(
-                            expanded = True,
-                            children = [
-                                render.Marquee(
+                                render.Image(
+                                    src = random_character["image"],
                                     width = 28,
-                                    height = 8,
-                                    scroll_direction = "horizontal",
-                                    align = "center",
-                                    child = render.WrappedText(
-                                        font = "tom-thumb",
-                                        height = 8,
-                                        content = random_character["name"]
-                                 )
+                                    height = 24
                                 )
                             ]
                         ),
@@ -152,7 +137,7 @@ def main(config):
                                     child = render.WrappedText(
                                         font = "tom-thumb",
                                         height = 8,
-                                        content = movie_names_by_id[random_quote["movie"]]
+                                        content = random_character["name"] + " - " + movie_names_by_id[random_quote["movie"]]
                                     )
                                 )
                             ]
