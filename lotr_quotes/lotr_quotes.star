@@ -3,6 +3,14 @@ Applet: LOTR Quotes
 Summary: Lord of the Rings Quotes
 Description: Displays a random quote from a LOTR movie character
 Author: pandincus and Ilya Zinger
+
+Thanks to:
+* 1. https://giventofly.github.io/pixelit/ for the pixelit utility, which we used
+*     to generate pixel art images for the characters from LOTR movie stills
+* 2. https://the-one-api.dev/ for the Lord of the Rings API, which we use as our
+      source of truth for quotes and character information
+* 3. https://elmah.io/tools/base64-image-encoder/ for the base64 image encoder, which
+      we used to encode the pixel art images into base64 strings
 """
 
 load("render.star", "render")
@@ -16,7 +24,7 @@ ONE_RING_ROOT_API = "https://the-one-api.dev/v2"
 API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5y4rrBQVGdfpr3uxwQNlJbIzXyoJZLBY7pRZX9MgJieuz3HWHIbqTlKEWgOVPF6YRJ5p5FVb0ukIrQUbINObJTeWlBT+r+x04Tpr/9DZo="
 QUOTES_API_TEMPLATE = ONE_RING_ROOT_API + "/character/{characterId}/quote"
 GET_ALL_MOVIES_API = ONE_RING_ROOT_API + "/movie"
-CSV_ENDPOINT = "https://gist.githubusercontent.com/pandincus/61249b73811c0d6bd910b3088c89fdb3/raw/a9ccedff07a5c1aa5a77708d41b83fb058a2ef44/LOTR_Base64_Characters.csv"
+CSV_ENDPOINT = "https://gist.githubusercontent.com/pandincus/61249b73811c0d6bd910b3088c89fdb3/raw/957ceaaf81db94081da1a9efccb0c4293c614dbd/LOTR_Base64_Characters.csv"
 
 # Load characters and images
 # ----------------------
@@ -54,9 +62,13 @@ def main(config):
     movies_json = response.json()["docs"]
     movie_names_by_id = {movie["_id"]: movie["name"] for movie in movies_json}
 
-    # Generate random character
-    random_character_index = random.number(0, len(lotr_characters)-1)
-    random_character_id = lotr_characters.keys()[random_character_index]
+    # Select a random character
+    # If the config parameter character_id is supplied, use that character instead
+    if config.get("character_id"):
+        random_character_id = config.get("character_id")
+    else:
+        random_character_index = random.number(0, len(lotr_characters)-1)
+        random_character_id = lotr_characters.keys()[random_character_index]
     random_character = lotr_characters[random_character_id]
 
     quotesApi = QUOTES_API_TEMPLATE.format(characterId=random_character_id)
@@ -80,18 +92,11 @@ def main(config):
     
     print("We picked " + str(random_quote_index) + " and the quote is" + str(random_quote))
     
-    # entire left side (2/3) = quote
-    # top right = character icon
-    # bottom right = character name
-
-    # two columns = first column is like 42 pixels wide, second column is 22 pixels wide, 32 pixels tall
-    # first column: all it has is a marquee holding wrapped text, scrolling vertically
-    # second column: has two rows, first row is 16 pixels tall, second row is 16 pixels tall
-    # second column, first row has the rendered image for icon
-    # second colun, second row just has wrapped text for the character name
-
+    # the layout is two columns, the left column is the quote (in a scrolling marquee), the right column is the character
+    # the right column is composed of two rows, the top row (24 pixels high) is the character image,
+    # the bottom row (8 pixels high) is the character and movie name
     return render.Root(
-        delay = 80,
+        delay = 75,
         child = render.Row(
             children = [
                 render.Column(
