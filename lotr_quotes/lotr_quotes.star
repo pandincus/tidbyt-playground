@@ -16,7 +16,7 @@ ONE_RING_ROOT_API = "https://the-one-api.dev/v2"
 API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5y4rrBQVGdfpr3uxwQNlJbIzXyoJZLBY7pRZX9MgJieuz3HWHIbqTlKEWgOVPF6YRJ5p5FVb0ukIrQUbINObJTeWlBT+r+x04Tpr/9DZo="
 QUOTES_API_TEMPLATE = ONE_RING_ROOT_API + "/character/{characterId}/quote"
 GET_ALL_MOVIES_API = ONE_RING_ROOT_API + "/movie"
-CSV_ENDPOINT = "https://gist.githubusercontent.com/pandincus/61249b73811c0d6bd910b3088c89fdb3/raw/aad8eeabf9ade32a67d6b6506a561453e2811974/LOTR_Base64_Characters.csv"
+CSV_ENDPOINT = "https://gist.githubusercontent.com/pandincus/61249b73811c0d6bd910b3088c89fdb3/raw/a9ccedff07a5c1aa5a77708d41b83fb058a2ef44/LOTR_Base64_Characters.csv"
 
 # Load characters and images
 # ----------------------
@@ -103,6 +103,7 @@ def main(config):
                             child = render.Marquee(
                                 height = 32,
                                 scroll_direction = "vertical",
+                                offset_start = 32,
                                 child = render.WrappedText(
                                     font = "tom-thumb",
                                     width = 36,
