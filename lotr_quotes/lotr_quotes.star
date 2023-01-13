@@ -5,11 +5,9 @@ Description: Displays a random quote from a LOTR movie character
 Author: pandincus and Ilya Zinger
 
 Thanks to:
-* 1. https://giventofly.github.io/pixelit/ for the pixelit utility, which we used
-*     to generate pixel art images for the characters from LOTR movie stills
-* 2. https://the-one-api.dev/ for the Lord of the Rings API, which we use as our
+* 1. https://the-one-api.dev/ for the Lord of the Rings API, which we use as our
       source of truth for quotes and character information
-* 3. https://elmah.io/tools/base64-image-encoder/ for the base64 image encoder, which
+* 2. https://elmah.io/tools/base64-image-encoder/ for the base64 image encoder, which
       we used to encode the pixel art images into base64 strings
 """
 
@@ -24,9 +22,9 @@ ONE_RING_ROOT_API = "https://the-one-api.dev/v2"
 API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5y4rrBQVGdfpr3uxwQNlJbIzXyoJZLBY7pRZX9MgJieuz3HWHIbqTlKEWgOVPF6YRJ5p5FVb0ukIrQUbINObJTeWlBT+r+x04Tpr/9DZo="
 QUOTES_API_TEMPLATE = ONE_RING_ROOT_API + "/character/{characterId}/quote"
 GET_ALL_MOVIES_API = ONE_RING_ROOT_API + "/movie"
-CSV_ENDPOINT = "https://gist.githubusercontent.com/ilyazinger/5bd7d31f3d115e6ba5fedaf7178d5dd5/raw/128c4d0e16fc0940a33347efd3ea3ca239a857d2/LOTR_Base64_Characters.csv"
+CSV_ENDPOINT = "https://gist.githubusercontent.com/pandincus/51223ccf34a9e3e7932812159c1d1234/raw/ce195e89c996a0618c4f851391c31b09292efa12/LOTR_Base64_Characters.csv"
 # ilya's gist https://gist.github.com/ilyazinger/5bd7d31f3d115e6ba5fedaf7178d5dd5
-# pandicus' gist https://gist.github.com/pandincus/61249b73811c0d6bd910b3088c89fdb3
+# pandicus' gist https://gist.github.com/pandincus/51223ccf34a9e3e7932812159c1d1234
 
 # Load characters and images
 # ----------------------
