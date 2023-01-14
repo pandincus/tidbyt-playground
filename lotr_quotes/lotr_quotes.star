@@ -23,12 +23,13 @@ API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5
 QUOTES_API_TEMPLATE = ONE_RING_ROOT_API + "/character/{characterId}/quote"
 GET_ALL_MOVIES_API = ONE_RING_ROOT_API + "/movie"
 CSV_ENDPOINT = "https://gist.githubusercontent.com/pandincus/af0e64d66c646613d0d7081a1183c964/raw/14bf66b15d236ebdb27f04bfcbda4fd6eb6b2574/LOTR_Base64_Characters.csv"
-# ilya's gist https://gist.github.com/ilyazinger/c08f4ba303b5581dd207ed94ae668b47
-# pandicus' gist https://gist.github.com/pandincus/af0e64d66c646613d0d7081a1183c964
 
-# Load characters and images
-# ----------------------
 def load_characters_and_images():
+    """Loads the LOTR characters and their images from a CSV file stored in a gist
+
+    Returns:
+      dict: a dictionary of LOTR characters, keyed by id
+    """
 
     request = http.get(CSV_ENDPOINT)
     if request.status_code != 200:
@@ -43,9 +44,32 @@ def load_characters_and_images():
     # the value is an object with 3 fields: id, name, image
     return {row_fields[1]: {"id": row_fields[1], "name": row_fields[0], "image": base64.decode(row_fields[2])} for row_fields in lotr_characters_csv}
 
-def main(config):
+def debug_print(debug, string):
+    """Prints a string to the console, but only if the debug parameter is set to true
 
-    lotr_characters = load_characters_and_images()
+    Args:
+      debug (bool): whether or not debug mode is enabled, which determines whether or not to print
+      string (str): the string to print
+    
+    Returns:
+      None
+    """
+    if debug:
+        print(string)
+
+def main(config):
+    """Main function, invoked by the Pixlet runtime
+
+    Args:
+      config (dict): a dictionary of configuration parameters, passed in by the Pixlet runtime
+                     The following parameters are supported:
+                        - dev_api_key: the API key to use when making requests to the One Ring API when running locally
+                        - character_id: the id of the character to use when fetching quotes (to avoid random selection)
+                        - debug: whether or not to print debug statements to the console (set to true to enable)
+
+    Returns:
+      render.Root: The rendered output, which is a scrolling marquee with a character image
+    """
 
     # Supply the config parameter when using the pixlet render command
     # For example, pixlet render lotr_quotes.star dev_api_key=my_api_key
@@ -53,6 +77,11 @@ def main(config):
     headers = {
         "Authorization": "Bearer " + str(api_key)
     }
+    # Set debug to True if the lowercased value of the debug config parameter is "true"
+    debug = config.get("debug") != None and config.get("debug").lower() == "true"
+
+    # First, load the LOTR characters and their images from the CSV file
+    lotr_characters = load_characters_and_images()
 
     # Fetch ALL movies from One Ring API, store them in a list
     response = http.get(GET_ALL_MOVIES_API, headers=headers)
@@ -71,8 +100,8 @@ def main(config):
         random_character_id = lotr_characters.keys()[random_character_index]
     random_character = lotr_characters[random_character_id]
 
-    quotesApi = QUOTES_API_TEMPLATE.format(characterId=random_character_id)
-    response = http.get(quotesApi, headers=headers)
+    quotes_api = QUOTES_API_TEMPLATE.format(characterId=random_character_id)
+    response = http.get(quotes_api, headers=headers)
 
     if response.status_code != 200:
         fail("One Ring Quotes API Failed with status code", response.status_code)
@@ -80,17 +109,17 @@ def main(config):
     quotes_json = response.json()["docs"]
 
     # print the number of quotes along with the character name and id
-    print("Found " + str(len(quotes_json)) + " quotes for " + random_character["name"] + " (" + random_character["id"] + ")")
+    debug_print(debug, "Found " + str(len(quotes_json)) + " quotes for " + random_character["name"] + " (" + random_character["id"] + ")")
 
-    if len(quotes_json) == 0:
-        print("Found no quotes for " + random_character["name"] + "(" + random_character["id"] + ")")
-    elif len(quotes_json) == 1:
+    random_quote_index = 0
+    random_quote = ""
+    if len(quotes_json) == 1:
         random_quote = quotes_json[0]
     else:
         random_quote_index = random.number(0, len(quotes_json)-1)
         random_quote = quotes_json[random_quote_index]
     
-    print("We picked " + str(random_quote_index) + " and the quote is" + str(random_quote))
+    debug_print(debug, "We picked " + str(random_quote_index) + " and the quote is" + str(random_quote))
     
     # the layout is two columns, the left column is the quote (in a scrolling marquee), the right column is the character
     # the right column is composed of two rows, the top row (24 pixels high) is the character image,
