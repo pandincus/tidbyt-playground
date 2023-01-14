@@ -66,13 +66,15 @@ def main(config):
                         - dev_api_key: the API key to use when making requests to the One Ring API when running locally
                         - character_id: the id of the character to use when fetching quotes (to avoid random selection)
                         - debug: whether or not to print debug statements to the console (set to true to enable)
+                     Supply the config parameter when using the pixlet render command
+                        For example, pixlet render lotr_quotes.star dev_api_key=my_api_key character_id=5cd99d4bde30eff6ebccde5f debug=true
 
     Returns:
       render.Root: The rendered output, which is a scrolling marquee with a character image
     """
 
-    # Supply the config parameter when using the pixlet render command
-    # For example, pixlet render lotr_quotes.star dev_api_key=my_api_key
+    # We set the authorization headers for the One Ring API here
+    # Decrypt the hardcoded API key, or use the dev_api_key config parameter if running locally
     api_key = secret.decrypt(API_KEY_ENCRYPTED) or config.get("dev_api_key")
     headers = {
         "Authorization": "Bearer " + str(api_key)
@@ -80,7 +82,7 @@ def main(config):
     # Set debug to True if the lowercased value of the debug config parameter is "true"
     debug = config.get("debug") != None and config.get("debug").lower() == "true"
 
-    # First, load the LOTR characters and their images from the CSV file
+    # Load the LOTR characters and their images from the CSV file
     lotr_characters = load_characters_and_images()
 
     # Fetch ALL movies from One Ring API, store them in a list
