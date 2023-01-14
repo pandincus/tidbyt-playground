@@ -22,8 +22,8 @@ ONE_RING_ROOT_API = "https://the-one-api.dev/v2"
 API_KEY_ENCRYPTED = "AV6+xWcEl2FxUXXBCofv20FrllxVMcsXrXECb2capXAwiViRZudepczQSt5y4rrBQVGdfpr3uxwQNlJbIzXyoJZLBY7pRZX9MgJieuz3HWHIbqTlKEWgOVPF6YRJ5p5FVb0ukIrQUbINObJTeWlBT+r+x04Tpr/9DZo="
 QUOTES_API_TEMPLATE = ONE_RING_ROOT_API + "/character/{characterId}/quote"
 GET_ALL_MOVIES_API = ONE_RING_ROOT_API + "/movie"
-CSV_ENDPOINT = "https://gist.githubusercontent.com/ilyazinger/c08f4ba303b5581dd207ed94ae668b47/raw/fc994e6fa718504cf30a79aad19fd9cd6ea9a841/LOTR_Base64_Characters.csv"
-# ilya's gist https://gist.github.com/ilyazinger/5bd7d31f3d115e6ba5fedaf7178d5dd5
+CSV_ENDPOINT = "https://gist.githubusercontent.com/ilyazinger/c08f4ba303b5581dd207ed94ae668b47/raw/affdaabd208cc94976353c54f5e6b6153dd46ef3/LOTR_Base64_Characters.csv"
+# ilya's gist https://gist.github.com/ilyazinger/c08f4ba303b5581dd207ed94ae668b47
 # pandicus' gist https://gist.github.com/pandincus/51223ccf34a9e3e7932812159c1d1234
 
 # Load characters and images
